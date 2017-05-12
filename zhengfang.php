@@ -1,6 +1,6 @@
 
 <?php
-	header("Content-type: text/html; charset=gb2312");
+header("Content-type: text/html; charset=gb2312");
 
 
 
@@ -32,7 +32,7 @@ class zhengfang{
 	function getImg(){
 		$url = "http://202.115.80.211/CheckCode.aspx";
 	    $cookie_file = dirname(__FILE__)."/cookie.txt";
-	    $img = $this->cURL($url,array(),'',$cookie_file,'','');
+	    $img = $this->cURL($url,[],'',$cookie_file,'','');
 	    $fp = fopen("./veri.jpg", "w");
 		fwrite($fp, $img);
 		fclose($fp);
@@ -71,9 +71,9 @@ class zhengfang{
 		$fp = fopen("./hidden.txt", "r");
 		$hidden = fread($fp, filesize("./hidden.txt"));
 
-		echo $hidden;
-		echo $_POST['txtUserName'].'<br/>';
-		echo $_POST['txtSecret'].'<br/>';
+		//echo $hidden;
+		//echo $_POST['txtUserName'].'<br/>';
+		//echo $_POST['txtSecret'].'<br/>';
 
 		$this->stunum = $_POST['txtUserName'];
 
@@ -92,8 +92,15 @@ class zhengfang{
 
 		$fields_string = "__VIEWSTATE=".urlencode($hidden)."&txtUserName=".$_POST['txtUserName']."&TextBox2=".$_POST['TextBox2']."&txtSecretCode=".$_POST['txtSecret']."&RadioButtonList1=%D1%A7%C9%FA&Button1=&lbLanguage=&hidPdrs=&hidsc=";
 		
-		$this->cURL($url,$headers,$fields_string,'',$cookie_file,'');
+		$data =  $this->cURL($url,$headers,$fields_string,'',$cookie_file,'');
+		echo $data;
 
+		preg_match_all('/<span id="xhxm">[\s\S]+?[\x{4E00}-\x{9FA5}]<\/span>/', $data, $name);
+		print_r($name);
+		exit;
+		$stuname = $name[0][0];
+		echo $stuname;
+		exit;
 		$this->getScore();
 	}
 
@@ -105,16 +112,16 @@ class zhengfang{
 		$cookie_file = dirname(__FILE__)."/cookie.txt";
 		$referer = 'http://202.115.80.211/xs_main.aspx?xh='.$xh;
 
-		$data = $this->cURL($url,'','','',$cookie_file,$referer);
+		$data = $this->cURL($url,[],'','',$cookie_file,$referer);
 
 		$hidden2 = array();
 
 		preg_match_all('/<input type="hidden" name="__VIEWSTATE" value="([^<>]+)" \/>/', $data, $hidden2);
 
 
-		print_r($hidden2);
+		//print_r($hidden2);
 		$hid = $hidden2[1][0];
-		echo $hid;
+		//echo $hid;
 		$this->getScorem($hid);
 	}
 
@@ -125,7 +132,7 @@ class zhengfang{
 		$cookie_file = dirname(__FILE__)."/cookie.txt";
 		$ch = curl_init($url);
 
-		echo $hid;
+		//echo $hid;
 
 		$headers = array(
 			"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -147,7 +154,7 @@ class zhengfang{
 			);
 
 		$fields_string = http_build_query($post);
-		echo $fields_string;
+		//echo $fields_string;
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 		curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_file);
