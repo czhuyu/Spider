@@ -7,6 +7,7 @@ header("Content-type: text/html; charset=gb2312");
 
 class zhengfang{
 	private $stunum = '';
+	private $stuname = '';
 
 
 	function cURL($url,$headers,$posts,$cookie_jar,$cookie_file,$referer){
@@ -93,20 +94,22 @@ class zhengfang{
 		$fields_string = "__VIEWSTATE=".urlencode($hidden)."&txtUserName=".$_POST['txtUserName']."&TextBox2=".$_POST['TextBox2']."&txtSecretCode=".$_POST['txtSecret']."&RadioButtonList1=%D1%A7%C9%FA&Button1=&lbLanguage=&hidPdrs=&hidsc=";
 		
 		$data =  $this->cURL($url,$headers,$fields_string,'',$cookie_file,'');
-		echo $data;
+		//echo $data;
 
-		preg_match_all('/<span id="xhxm">[\s\S]+?[\x{4E00}-\x{9FA5}]<\/span>/', $data, $name);
-		print_r($name);
-		exit;
-		$stuname = $name[0][0];
-		echo $stuname;
-		exit;
+		preg_match_all('/<span id="xhxm">(.*)<\/span>/', $data, $name);
+
+		//echo $name[1][0],'<br>';
+		//echo mb_strlen($name[1][0],'gb2312'),'<br>';
+		//echo mb_strlen('张三同学','gb2312'),'<br>';
+		//echo mb_strlen($name[1][0],'utf8'),'<br>';
+		//echo mb_strlen('张三同学','utf8'),'<br>';
+		$this->stuname =  mb_substr($name[1][0], 0 , -2 ,'gb2312');
 		$this->getScore();
 	}
 
 
 	function getScore(){
-		$xm = urlencode('朱宇');
+		$xm = urlencode($this->stuname);
 		$xh = $this->stunum;
 		$url = "http://202.115.80.211/xscj_gc.aspx?xh=$xh&xm=$xm&gnmkdm=N121605";
 		$cookie_file = dirname(__FILE__)."/cookie.txt";
@@ -126,7 +129,7 @@ class zhengfang{
 	}
 
 	function getScorem($hid){
-		$xm = urlencode('朱宇');
+		$xm = urlencode($this->stuname);
 		$xh = $this->stunum;
 		$url = "http://202.115.80.211/xscj_gc.aspx?xh=$xh&xm=$xm&gnmkdm=N121605";
 		$cookie_file = dirname(__FILE__)."/cookie.txt";
@@ -140,7 +143,7 @@ class zhengfang{
 			"Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3",
 			"Connection: keep-alive",
 			"Host: 202.115.80.211",
-			"Referer: http://202.115.80.211/xscj_gc.aspx?xh=201410420127&xm=%D6%EC%D3%EE&gnmkdm=N121605",
+			"Referer: http://202.115.80.211/xscj_gc.aspx?xh=$xh&xm=$xm&gnmkdm=N121605",
 			"Upgrade-Insecure-Requests: 1",
 			"User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0",
 			"Content-Type: application/x-www-form-urlencoded"
